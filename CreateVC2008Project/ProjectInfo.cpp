@@ -121,8 +121,6 @@ bool CSolutionInfo::SetFolder( const char * pszFolder, const char * pszSolutionN
 				if( GetGUID( clsInfo.m_strProjectGUID ) == false ) return false;
 
 				m_clsProjectInfoList.push_back( clsInfo );
-
-				break;
 			}
 		}
 
