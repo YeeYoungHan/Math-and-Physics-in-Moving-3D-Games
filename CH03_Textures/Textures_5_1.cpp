@@ -1,6 +1,6 @@
 //------------------------------------------------------------
 // Textures_5_1.cpp
-// ë°˜íˆ¬ëª… êµ¬ ê·¸ë¦¬ê¸°(Zë²„í¼ ë¬¸ì œê°€ ìˆëŠ” ë²„ì „)
+// ¹İÅõ¸í ±¸ ±×¸®±â(Z¹öÆÛ ¹®Á¦°¡ ÀÖ´Â ¹öÀü)
 // 
 //------------------------------------------------------------
 
@@ -8,37 +8,37 @@
 #include <D3Dcompiler.h>
 #include <xnamath.h>
 
-#define VIEW_WIDTH			800					// í™”ë©´ë„ˆë¹„
-#define VIEW_HEIGHT			600					// í™”ë©´ë†’ì´
+#define VIEW_WIDTH			800					// È­¸é³Êºñ
+#define VIEW_HEIGHT			600					// È­¸é³ôÀÌ
 
-#define PI					3.1415927f			// ì›ì£¼ìœ¨
-#define ROT_SPEED			( PI / 100.0f )		// íšŒì „ì†ë„
-#define R					2.0f				// ë„í˜•í¬ê¸°
-#define CORNER_NUM			20					// ê°ìˆ˜
+#define PI					3.1415927f			// ¿øÁÖÀ²
+#define ROT_SPEED			( PI / 100.0f )		// È¸Àü¼Óµµ
+#define R					2.0f				// µµÇüÅ©±â
+#define CORNER_NUM			20					// °¢¼ö
 
 
-// ì •ì êµ¬ì¡°ì²´
+// Á¤Á¡±¸Á¶Ã¼
 struct CUSTOMVERTEX {
     XMFLOAT4	v4Pos;
 	XMFLOAT2	v2UV;
 };
 
 
-// í…ìŠ¤ì²˜ ìˆëŠ” ì¸ë±ìŠ¤ëœ 3D í´ë¦¬ê³¤ ê·¸ë¦¬ê¸°
+// ÅØ½ºÃ³ ÀÖ´Â ÀÎµ¦½ºµÈ 3D Æú¸®°ï ±×¸®±â
 int DrawIndexed3DPolygonsTex( CUSTOMVERTEX *pVertices, int nVertexNum, WORD *pIndices, int nIndexNum );
 
-// ì›”ë“œí–‰ë ¬ ìƒì„±
+// ¿ùµåÇà·Ä »ı¼º
 XMMATRIX CreateWorldMatrix( void )
 {
-	float			fAngleY;							// yì¸… íšŒì „ê°
-	static float	fAngleX = 0.0f;						// xì¶• íšŒì „ê°
-	XMMATRIX		matRot_Y;							// yì¶• íšŒì „í–‰ë ¬
-	XMMATRIX		matRot_X;							// xì¶• íšŒì „í–‰ë ¬
+	float			fAngleY;							// y®‚ È¸Àü°¢
+	static float	fAngleX = 0.0f;						// xÃà È¸Àü°¢
+	XMMATRIX		matRot_Y;							// yÃà È¸ÀüÇà·Ä
+	XMMATRIX		matRot_X;							// xÃà È¸ÀüÇà·Ä
 
-	// ê°•ì œíšŒì „
+	// °­Á¦È¸Àü
 	fAngleY = 2.0f * PI * ( float )( timeGetTime() % 3000 ) / 3000.0f;
 
-	// í‚¤ì…ë ¥ìœ¼ë¡œ íšŒì „ 
+	// Å°ÀÔ·ÂÀ¸·Î È¸Àü 
 	if ( GetAsyncKeyState( VK_UP ) ) {
 		fAngleX += ROT_SPEED;
 	}
@@ -46,27 +46,27 @@ XMMATRIX CreateWorldMatrix( void )
 		fAngleX -= ROT_SPEED;
 	}
 
-	// í–‰ë ¬ì‘ì„±
+	// Çà·ÄÀÛ¼º
 	matRot_Y = XMMatrixRotationY( fAngleY );
 	matRot_X = XMMatrixRotationX( fAngleX );
 
-	return matRot_Y * matRot_X;						// íšŒì „ì˜ í•©ì„± 
+	return matRot_Y * matRot_X;						// È¸ÀüÀÇ ÇÕ¼º 
 }
 
 
-// ì´ë¯¸ì§€ ê·¸ê¸°ë¦¬ 
+// ÀÌ¹ÌÁö ±×±â¸® 
 int DrawChangingPictures( void )
 {
 	int					i, j;
-	CUSTOMVERTEX		Vertices[( CORNER_NUM + 1 ) * ( CORNER_NUM / 4 + 1 )];	// ì •ì  ë°ì´í„° 
-	WORD				wIndices[CORNER_NUM * CORNER_NUM / 4 * 2 * 3];	// ì¸ë±ìŠ¤ ë°ì´í„°
+	CUSTOMVERTEX		Vertices[( CORNER_NUM + 1 ) * ( CORNER_NUM / 4 + 1 )];	// Á¤Á¡ µ¥ÀÌÅÍ 
+	WORD				wIndices[CORNER_NUM * CORNER_NUM / 4 * 2 * 3];	// ÀÎµ¦½º µ¥ÀÌÅÍ
 	float				fTheta;
 	float				fPhi;
 	float				fAngleDelta;
-	int					nIndex;						// ë°ì´í„°ì˜ ì¸ë±ìŠ¤
-	int					nIndexY;					// yë°©í–¥ ì¸ë±ìŠ¤
+	int					nIndex;						// µ¥ÀÌÅÍÀÇ ÀÎµ¦½º
+	int					nIndexY;					// y¹æÇâ ÀÎµ¦½º
 
-	// ì •ì  ë°ì´í„° ì‘ì„±
+	// Á¤Á¡ µ¥ÀÌÅÍ ÀÛ¼º
 	fAngleDelta = 2.0f * PI / CORNER_NUM;
 	nIndex = 0;
 	fTheta = 0.0f;
@@ -83,7 +83,7 @@ int DrawChangingPictures( void )
 		fTheta += fAngleDelta;
 	}
 
-	// ì¸ë±ìŠ¤ ë°ì´í„° ì‘ì„±
+	// ÀÎµ¦½º µ¥ÀÌÅÍ ÀÛ¼º
 	nIndex = 0;
 	for ( i = 0; i < CORNER_NUM; i++ ) {
 		for ( j = 0; j < CORNER_NUM / 4; j++ ) {
@@ -99,7 +99,7 @@ int DrawChangingPictures( void )
 		}
 	}
 
-	// ì •ì  ì¸ë±ìŠ¤ë¡œ ê·¸ë¦¬ê¸°
+	// Á¤Á¡ ÀÎµ¦½º·Î ±×¸®±â
 	DrawIndexed3DPolygonsTex( Vertices, ( CORNER_NUM + 1 ) * ( CORNER_NUM / 4 + 1 ),
 							  wIndices, CORNER_NUM * CORNER_NUM / 4 * 2 * 3 );
 
@@ -108,35 +108,35 @@ int DrawChangingPictures( void )
 
 
 //------------------------------------------------------------
-// ì•„ë˜ëŠ” DirectXë¡œ í‘œì‹œí•˜ëŠ” í”„ë¡œê·¸ë¨
+// ¾Æ·¡´Â DirectX·Î Ç¥½ÃÇÏ´Â ÇÁ·Î±×·¥
 
 #include <stdio.h>
 #include <windows.h>
-#include <tchar.h>								// Unicode, ë©€í‹°ë°”ì´íŠ¸ ë¬¸ìê´€ê³„
+#include <tchar.h>								// Unicode, ¸ÖÆ¼¹ÙÀÌÆ® ¹®ÀÚ°ü°è
 
 
-#define MAX_BUFFER_VERTEX				10000	// ìµœëŒ€ë²„í¼ ì •ì ìˆ˜
-#define MAX_BUFFER_INDEX				20000	// ìµœëŒ€ë²„í¼ ì¸ë±ìŠ¤ìˆ˜
+#define MAX_BUFFER_VERTEX				10000	// ÃÖ´ë¹öÆÛ Á¤Á¡¼ö
+#define MAX_BUFFER_INDEX				20000	// ÃÖ´ë¹öÆÛ ÀÎµ¦½º¼ö
 
 
-// ë§í¬ë¼ì´ë¸ŒëŸ¬ë¦¬
-#pragma comment( lib, "d3d11.lib" )   // D3D11ë¼ì´ë¸ŒëŸ¬ë¦¬
+// ¸µÅ©¶óÀÌºê·¯¸®
+#pragma comment( lib, "d3d11.lib" )   // D3D11¶óÀÌºê·¯¸®
 #pragma comment( lib, "d3dx11.lib" )
 #pragma comment( lib, "winmm.lib" )
 
 
-// ì„¸ì´í”„ ë¦´ë¦¬ìŠ¤ ë§¤í¬ë¡œ
+// ¼¼ÀÌÇÁ ¸±¸®½º ¸ÅÅ©·Î
 #ifndef SAFE_RELEASE
 #define SAFE_RELEASE( p )      { if ( p ) { ( p )->Release(); ( p )=NULL; } }
 #endif
 
-// ì…°ì´ë” ìƒìˆ˜ êµ¬ì¡°ì²´
+// ¼ÎÀÌ´õ »ó¼ö ±¸Á¶Ã¼
 struct CBNeverChanges
 {
     XMMATRIX mView;
 };
 
-// í…ìŠ¤ì²˜ ì´ë¯¸ì§€ êµ¬ì¡°ì²´
+// ÅØ½ºÃ³ ÀÌ¹ÌÁö ±¸Á¶Ã¼
 struct TEX_PICTURE {
 	ID3D11ShaderResourceView	*pSRViewTexture;
 	D3D11_TEXTURE2D_DESC		tdDesc;
@@ -144,34 +144,34 @@ struct TEX_PICTURE {
 };
 
 
-// ê¸€ë¡œë²Œ ë³€ìˆ˜
-UINT  g_nClientWidth;							// ê·¸ë¦´ ì˜ì—­ì˜ ë„ˆë¹„
-UINT  g_nClientHeight;							// ê·¸ë¦´ ì˜ì—­ì˜ ë†’ì´
+// ±Û·Î¹ú º¯¼ö
+UINT  g_nClientWidth;							// ±×¸± ¿µ¿ªÀÇ ³Êºñ
+UINT  g_nClientHeight;							// ±×¸± ¿µ¿ªÀÇ ³ôÀÌ
 
-HWND        g_hWnd;         // ìœˆë„ìš° í•¸ë“¤
+HWND        g_hWnd;         // À©µµ¿ì ÇÚµé
 
 
-ID3D11Device			*g_pd3dDevice;			// ë””ë°”ì´ìŠ¤
-IDXGISwapChain			*g_pSwapChain;			// DXGIìŠ¤ì™‘ì²´ì¸
-ID3D11DeviceContext		*g_pImmediateContext;	// ë””ë°”ì´ìŠ¤ ì»¨í…ìŠ¤íŠ¸
-ID3D11RasterizerState	*g_pRS;					// ë˜ìŠ¤í„°ë¼ì´ì €
-ID3D11RenderTargetView	*g_pRTV;				// ë Œë”ë§ íƒ€ê¹ƒ
-ID3D11Texture2D*        g_pDepthStencil = NULL;	// Zë²„í¼
-ID3D11DepthStencilView* g_pDepthStencilView = NULL;	// Zë²„í¼ì˜ ë·°
-ID3D11DepthStencilState *g_pDSStencilState = NULL;	// Zë²„í¼ì˜ ìƒíƒœ
-D3D_FEATURE_LEVEL       g_FeatureLevel;			// í”¼ì²˜ë ˆë²¨
+ID3D11Device			*g_pd3dDevice;			// µğ¹ÙÀÌ½º
+IDXGISwapChain			*g_pSwapChain;			// DXGI½º¿ÒÃ¼ÀÎ
+ID3D11DeviceContext		*g_pImmediateContext;	// µğ¹ÙÀÌ½º ÄÁÅØ½ºÆ®
+ID3D11RasterizerState	*g_pRS;					// ·¡½ºÅÍ¶óÀÌÀú
+ID3D11RenderTargetView	*g_pRTV;				// ·»´õ¸µ Å¸±ê
+ID3D11Texture2D*        g_pDepthStencil = NULL;	// Z¹öÆÛ
+ID3D11DepthStencilView* g_pDepthStencilView = NULL;	// Z¹öÆÛÀÇ ºä
+ID3D11DepthStencilState *g_pDSStencilState = NULL;	// Z¹öÆÛÀÇ »óÅÂ
+D3D_FEATURE_LEVEL       g_FeatureLevel;			// ÇÇÃ³·¹º§
 
-ID3D11Buffer			*g_pVertexBuffer;		// ì •ì ë²„í¼
-ID3D11Buffer			*g_pIndexBuffer;		// ì¸ë±ìŠ¤ë²„í¼
-ID3D11BlendState		*g_pbsAddBlend; 		// ê°€ì‚°ë¸”ë Œë“œ
-ID3D11VertexShader		*g_pVertexShader;		// ì •ì ì…°ì´ë”
-ID3D11PixelShader		*g_pPixelShader;		// í”½ì…€ì…°ì´ë”
-ID3D11InputLayout		*g_pInputLayout;		// ì…°ì´ë”ì…ë ¥ ë ˆì´ì•„ì›ƒ
-ID3D11SamplerState		*g_pSamplerState;		// ìƒ˜í”ŒëŸ¬ ìŠ¤í…Œì´íŠ¸
+ID3D11Buffer			*g_pVertexBuffer;		// Á¤Á¡¹öÆÛ
+ID3D11Buffer			*g_pIndexBuffer;		// ÀÎµ¦½º¹öÆÛ
+ID3D11BlendState		*g_pbsAddBlend; 		// °¡»êºí·»µå
+ID3D11VertexShader		*g_pVertexShader;		// Á¤Á¡¼ÎÀÌ´õ
+ID3D11PixelShader		*g_pPixelShader;		// ÇÈ¼¿¼ÎÀÌ´õ
+ID3D11InputLayout		*g_pInputLayout;		// ¼ÎÀÌ´õÀÔ·Â ·¹ÀÌ¾Æ¿ô
+ID3D11SamplerState		*g_pSamplerState;		// »ùÇÃ·¯ ½ºÅ×ÀÌÆ®
 
 ID3D11Buffer			*g_pCBNeverChanges = NULL;
 
-// ì •ì  ë²„í¼
+// Á¤Á¡ ¹öÆÛ
 CUSTOMVERTEX g_cvVertices[MAX_BUFFER_VERTEX];
 int							g_nVertexNum = 0;
 
@@ -180,11 +180,11 @@ int							g_nIndexNum = 0;
 
 TEX_PICTURE				g_tTexture;
 
-// í˜„ì¬ í…ìŠ¤ì²˜
+// ÇöÀç ÅØ½ºÃ³
 ID3D11ShaderResourceView	*g_pNowTexture = NULL;
 
 
-// Direct3D ì´ˆê¸°í™”
+// Direct3D ÃÊ±âÈ­
 HRESULT InitD3D( void )
 {
     HRESULT hr = S_OK;
@@ -197,7 +197,7 @@ HRESULT InitD3D( void )
 	UINT               numLevelsRequested = 6;
 	D3D_FEATURE_LEVEL  FeatureLevelsSupported;
 
-	// ë””ë°”ì´ìŠ¤ ìƒì„±
+	// µğ¹ÙÀÌ½º »ı¼º
 	hr = D3D11CreateDevice( NULL,
 					D3D_DRIVER_TYPE_HARDWARE, 
 					NULL, 
@@ -212,7 +212,7 @@ HRESULT InitD3D( void )
 		return hr;
 	}
 
-	// íŒ©í† ë¦¬ ì·¨ë“
+	// ÆÑÅä¸® Ãëµæ
 	IDXGIDevice * pDXGIDevice;
 	hr = g_pd3dDevice->QueryInterface( __uuidof( IDXGIDevice ), ( void ** )&pDXGIDevice );
 	IDXGIAdapter * pDXGIAdapter;
@@ -220,7 +220,7 @@ HRESULT InitD3D( void )
 	IDXGIFactory * pIDXGIFactory;
 	pDXGIAdapter->GetParent( __uuidof( IDXGIFactory ), ( void ** )&pIDXGIFactory);
 
-	// ìŠ¤ì™‘ì²´ì¸ ìƒì„±
+	// ½º¿ÒÃ¼ÀÎ »ı¼º
     DXGI_SWAP_CHAIN_DESC	sd;
 	ZeroMemory( &sd, sizeof( sd ) );
 	sd.BufferCount = 1;
@@ -244,7 +244,7 @@ HRESULT InitD3D( void )
 		return hr;
 	}
 
-    // ë Œë”ë§ íƒ€ê¹ƒ ìƒì„±
+    // ·»´õ¸µ Å¸±ê »ı¼º
     ID3D11Texture2D			*pBackBuffer = NULL;
     D3D11_TEXTURE2D_DESC BackBufferSurfaceDesc;
     hr = g_pSwapChain->GetBuffer( 0, __uuidof( ID3D11Texture2D ), ( LPVOID* )&pBackBuffer );
@@ -290,10 +290,10 @@ HRESULT InitD3D( void )
     if( FAILED( hr ) )
         return hr;
 
-	// *** ë Œë”ë§ íƒ€ê¹ƒ ì„¤ì • ***
+	// *** ·»´õ¸µ Å¸±ê ¼³Á¤ ***
     g_pImmediateContext->OMSetRenderTargets( 1, &g_pRTV, g_pDepthStencilView );
 
-    // ë˜ìŠ¤í„°ë¼ì´ì € ì„¤ì •
+    // ·¡½ºÅÍ¶óÀÌÀú ¼³Á¤
     D3D11_RASTERIZER_DESC drd;
 	ZeroMemory( &drd, sizeof( drd ) );
 	drd.FillMode				= D3D11_FILL_SOLID;
@@ -307,7 +307,7 @@ HRESULT InitD3D( void )
     }
     g_pImmediateContext->RSSetState( g_pRS );
 
-    // ë·°í¬íŠ¸ ì„¤ì •
+    // ºäÆ÷Æ® ¼³Á¤
     D3D11_VIEWPORT vp;
     vp.Width    = ( FLOAT )g_nClientWidth;
     vp.Height   = ( FLOAT )g_nClientHeight;
@@ -321,7 +321,7 @@ HRESULT InitD3D( void )
 }
 
 
-// í”„ë¡œê·¸ë˜ë¨¸ë¸” ì…°ì´ë” ì‘ì„±
+// ÇÁ·Î±×·¡¸Óºí ¼ÎÀÌ´õ ÀÛ¼º
 HRESULT MakeShaders( void )
 {
     HRESULT hr;
@@ -333,7 +333,7 @@ HRESULT MakeShaders( void )
 #ifdef _DEBUG
     dwShaderFlags |= D3DCOMPILE_DEBUG;
 #endif
-    // ì»´íŒŒì¼
+    // ÄÄÆÄÀÏ
     hr = D3DX11CompileFromFile( _T( "Basic_3D_Tex.fx" ), NULL, NULL, "VS", "vs_4_0_level_9_1",
 								dwShaderFlags, 0, NULL, &pVertexShaderBuffer, &pError, NULL );
     if ( FAILED( hr ) ) {
@@ -350,7 +350,7 @@ HRESULT MakeShaders( void )
     }
     SAFE_RELEASE( pError );
     
-    // VertexShader ìƒì„±
+    // VertexShader »ı¼º
     hr = g_pd3dDevice->CreateVertexShader( pVertexShaderBuffer->GetBufferPointer(),
 										   pVertexShaderBuffer->GetBufferSize(),
 										   NULL, &g_pVertexShader );
@@ -359,7 +359,7 @@ HRESULT MakeShaders( void )
         SAFE_RELEASE( pPixelShaderBuffer );
         return hr;
     }
-    // PixelShader ìƒì„±
+    // PixelShader »ı¼º
     hr = g_pd3dDevice->CreatePixelShader( pPixelShaderBuffer->GetBufferPointer(),
 										  pPixelShaderBuffer->GetBufferSize(),
 										  NULL, &g_pPixelShader );
@@ -369,13 +369,13 @@ HRESULT MakeShaders( void )
         return hr;
     }
 
-    // ì…ë ¥ë²„í¼ì˜ ì…ë ¥í˜•ì‹
+    // ÀÔ·Â¹öÆÛÀÇ ÀÔ·ÂÇü½Ä
     D3D11_INPUT_ELEMENT_DESC layout[] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "TEXTURE",  0, DXGI_FORMAT_R32G32_FLOAT,       0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 	UINT numElements = ARRAYSIZE( layout );
-	// ì…ë ¥ë²„í¼ì˜ ì…ë ¥í˜•ì‹ ìƒì„±
+	// ÀÔ·Â¹öÆÛÀÇ ÀÔ·ÂÇü½Ä »ı¼º
     hr = g_pd3dDevice->CreateInputLayout( layout, numElements,
 										  pVertexShaderBuffer->GetBufferPointer(),
 										  pVertexShaderBuffer->GetBufferSize(),
@@ -386,7 +386,7 @@ HRESULT MakeShaders( void )
         return hr;
     }
 
-    // ì…°ì´ë” ìƒìˆ˜ ë²„í¼ ìƒì„±
+    // ¼ÎÀÌ´õ »ó¼ö ¹öÆÛ »ı¼º
     D3D11_BUFFER_DESC bd;
     ZeroMemory( &bd, sizeof( bd ) );
     bd.Usage = D3D11_USAGE_DEFAULT;
@@ -397,7 +397,7 @@ HRESULT MakeShaders( void )
     if( FAILED( hr ) )
         return hr;
 
-	// ë³€í™˜í–‰ë ¬
+	// º¯È¯Çà·Ä
     CBNeverChanges	cbNeverChanges;
 	XMMATRIX		mScreen;
     mScreen = XMMatrixIdentity();
@@ -412,7 +412,7 @@ HRESULT MakeShaders( void )
 }
 
 
-// í…ìŠ¤ì²˜ ë¡œë“œ
+// ÅØ½ºÃ³ ·Îµå
 int LoadTexture( TCHAR *szFileName, TEX_PICTURE *pTexPic, int nWidth, int nHeight,
 				 int nTexWidth, int nTexHeight )
 {
@@ -442,12 +442,12 @@ int LoadTexture( TCHAR *szFileName, TEX_PICTURE *pTexPic, int nWidth, int nHeigh
 }
 
 
-// ë“œë¡œìš° ëª¨ë“œ ì˜µì íŠ¸ ì´ˆê¸°í™”
+// µå·Î¿ì ¸ğµå ¿ÉÁ§Æ® ÃÊ±âÈ­
 int InitDrawModes( void )
 {
     HRESULT				hr;
 
-	// ë¸”ë Œë“œ ìŠ¤í…Œì´íŠ¸
+	// ºí·»µå ½ºÅ×ÀÌÆ®
     D3D11_BLEND_DESC BlendDesc;
 	BlendDesc.AlphaToCoverageEnable = FALSE;
 	BlendDesc.IndependentBlendEnable = FALSE;
@@ -464,7 +464,7 @@ int InitDrawModes( void )
         return hr;
     }
 
-    // ìƒ˜í”ŒëŸ¬
+    // »ùÇÃ·¯
     D3D11_SAMPLER_DESC samDesc;
     ZeroMemory( &samDesc, sizeof( samDesc ) );
     samDesc.Filter          = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -482,12 +482,12 @@ int InitDrawModes( void )
 }
 
 
-// ì§€ì˜¤ë©”íŠ¸ë¦¬ ì´ˆê¸°í™”
+// Áö¿À¸ŞÆ®¸® ÃÊ±âÈ­
 HRESULT InitGeometry( void )
 {
     HRESULT hr = S_OK;
 
-    // ì •ì ë²„í¼ ìƒì„±
+    // Á¤Á¡¹öÆÛ »ı¼º
     D3D11_BUFFER_DESC BufferDesc;
     BufferDesc.Usage                = D3D11_USAGE_DYNAMIC;
     BufferDesc.ByteWidth            = sizeof( CUSTOMVERTEX ) * MAX_BUFFER_VERTEX;
@@ -504,7 +504,7 @@ HRESULT InitGeometry( void )
         return hr;
     }
 
-    // ì¸ë±ìŠ¤ ë²„í¼ ìƒì„±
+    // ÀÎµ¦½º ¹öÆÛ »ı¼º
     BufferDesc.Usage                = D3D11_USAGE_DYNAMIC;
     BufferDesc.ByteWidth            = sizeof( WORD ) * MAX_BUFFER_INDEX;
     BufferDesc.BindFlags            = D3D11_BIND_INDEX_BUFFER;
@@ -516,7 +516,7 @@ HRESULT InitGeometry( void )
     if( FAILED( hr ) )
         return hr;
 
-	// í…ìŠ¤ì²˜ ì‘ì„±
+	// ÅØ½ºÃ³ ÀÛ¼º
 	g_tTexture.pSRViewTexture =  NULL;
 	hr = LoadTexture( _T( "6.bmp" ), &g_tTexture, 512, 512, 512, 512 );
     if ( FAILED( hr ) ) {
@@ -528,7 +528,7 @@ HRESULT InitGeometry( void )
 }
 
 
-// ì¢…ë£Œì²˜ë¦¬
+// Á¾·áÃ³¸®
 int Cleanup( void )
 {
     SAFE_RELEASE( g_tTexture.pSRViewTexture );
@@ -542,33 +542,33 @@ int Cleanup( void )
     SAFE_RELEASE( g_pVertexShader );
     SAFE_RELEASE( g_pCBNeverChanges );
 
-    SAFE_RELEASE( g_pRS );									// ë˜ìŠ¤í„°ë¼ì´ì €
+    SAFE_RELEASE( g_pRS );									// ·¡½ºÅÍ¶óÀÌÀú
 
-	// ìŠ¤í…Œì´í„°ìŠ¤ í´ë¦¬ì–´
+	// ½ºÅ×ÀÌÅÍ½º Å¬¸®¾î
 	if ( g_pImmediateContext ) {
 		g_pImmediateContext->ClearState();
 		g_pImmediateContext->Flush();
 	}
 
-    SAFE_RELEASE( g_pRTV );									// ë Œë”ë§ íƒ€ê¹ƒ
-    SAFE_RELEASE( g_pDepthStencil );						// Zë²„í¼
-    SAFE_RELEASE( g_pDepthStencilView );					// Zë²„í¼ì˜ ë·°
-    SAFE_RELEASE( g_pDSStencilState );						// Zë²„í¼ì˜ ìŠ¤í…Œì´íŠ¸
+    SAFE_RELEASE( g_pRTV );									// ·»´õ¸µ Å¸±ê
+    SAFE_RELEASE( g_pDepthStencil );						// Z¹öÆÛ
+    SAFE_RELEASE( g_pDepthStencilView );					// Z¹öÆÛÀÇ ºä
+    SAFE_RELEASE( g_pDSStencilState );						// Z¹öÆÛÀÇ ½ºÅ×ÀÌÆ®
 
-    // ìŠ¤ì™‘ì²´ì¸
+    // ½º¿ÒÃ¼ÀÎ
     if ( g_pSwapChain != NULL ) {
         g_pSwapChain->SetFullscreenState( FALSE, 0 );
     }
     SAFE_RELEASE( g_pSwapChain );
 
-    SAFE_RELEASE( g_pImmediateContext );					// ë””ë°”ì´ìŠ¤ ì»¨í…ìŠ¤íŠ¸
-    SAFE_RELEASE( g_pd3dDevice );							// ë””ë°”ì´ìŠ¤
+    SAFE_RELEASE( g_pImmediateContext );					// µğ¹ÙÀÌ½º ÄÁÅØ½ºÆ®
+    SAFE_RELEASE( g_pd3dDevice );							// µğ¹ÙÀÌ½º
 
 	return 0;
 }
 
 
-// ìœˆë„ìš° í”„ë¡œì‹œì €
+// À©µµ¿ì ÇÁ·Î½ÃÀú
 LRESULT WINAPI MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
     switch( msg )
@@ -582,7 +582,7 @@ LRESULT WINAPI MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 }
 
 
-// ê·¸ë¦¬ê¸° ëŒ€ê¸°í–‰ë ¬ í”ŒëŸ¬ì‹œ
+// ±×¸®±â ´ë±âÇà·Ä ÇÃ·¯½Ã
 int FlushDrawingPictures( void )
 {
 	HRESULT			hr;
@@ -609,7 +609,7 @@ int FlushDrawingPictures( void )
 }
 
 
-// í…ìŠ¤ì²˜ ìˆëŠ” ì¸ë±ìŠ¤ëœ 3D í´ë¦¬ê³¤ ê·¸ë¦¬ê¸°
+// ÅØ½ºÃ³ ÀÖ´Â ÀÎµ¦½ºµÈ 3D Æú¸®°ï ±×¸®±â
 int DrawIndexed3DPolygonsTex( CUSTOMVERTEX *pVertices, int nVertexNum, WORD *pIndices, int nIndexNum )
 {
 	int				i;
@@ -628,20 +628,20 @@ int DrawIndexed3DPolygonsTex( CUSTOMVERTEX *pVertices, int nVertexNum, WORD *pIn
 }
 
 
-// ë Œë”ë§
+// ·»´õ¸µ
 HRESULT Render( void )
 {
-    // í™”ë©´ í´ë¦¬ì–´
+    // È­¸é Å¬¸®¾î
 	XMFLOAT4	v4Color = XMFLOAT4( 0.0f, 0.0f, 0.0f, 1.0f );
     g_pImmediateContext->ClearRenderTargetView( g_pRTV, ( float * )&v4Color );
-	// *** Zë²„í¼ í´ë¦¬ì–´ ***
+	// *** Z¹öÆÛ Å¬¸®¾î ***
     g_pImmediateContext->ClearDepthStencilView( g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0 );
 
-    // ìƒ˜í”ŒëŸ¬ ë˜ìŠ¤í„°ë¼ì´ì € ì„¤ì •
+    // »ùÇÃ·¯ ·¡½ºÅÍ¶óÀÌÀú ¼³Á¤
     g_pImmediateContext->PSSetSamplers( 0, 1, &g_pSamplerState );
     g_pImmediateContext->RSSetState( g_pRS );
     
-    // ê·¸ë¦¬ê¸° ì„¤ì •
+    // ±×¸®±â ¼³Á¤
     UINT nStrides = sizeof( CUSTOMVERTEX );
     UINT nOffsets = 0;
     g_pImmediateContext->IASetVertexBuffers( 0, 1, &g_pVertexBuffer, &nStrides, &nOffsets );
@@ -649,12 +649,12 @@ HRESULT Render( void )
     g_pImmediateContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
     g_pImmediateContext->IASetInputLayout( g_pInputLayout );
 
-    // ì…°ì´ë” ì„¤ì •
+    // ¼ÎÀÌ´õ ¼³Á¤
     g_pImmediateContext->VSSetShader( g_pVertexShader, NULL, 0 );
     g_pImmediateContext->VSSetConstantBuffers( 0, 1, &g_pCBNeverChanges );
     g_pImmediateContext->PSSetShader( g_pPixelShader, NULL, 0 );
 
-	// ë³€í™˜í–‰ë ¬
+	// º¯È¯Çà·Ä
     CBNeverChanges	cbNeverChanges;
 	XMMATRIX		mWorld;
 	XMMATRIX		mView;
@@ -674,27 +674,27 @@ HRESULT Render( void )
 	cbNeverChanges.mView = XMMatrixTranspose( mWorld * mView * mProjection );
 	g_pImmediateContext->UpdateSubresource( g_pCBNeverChanges, 0, NULL, &cbNeverChanges, 0, 0 );
 
-    // ê·¸ë¦¬ê¸°
+    // ±×¸®±â
     g_pImmediateContext->OMSetBlendState( g_pbsAddBlend, NULL, 0xFFFFFFFF );
 //    g_pImmediateContext->OMSetBlendState( NULL, NULL, 0xFFFFFFFF );
 	DrawChangingPictures();
 
-    // í‘œì‹œ
+    // Ç¥½Ã
 	FlushDrawingPictures();
 
     return S_OK;
 }
 
 
-// ì—”íŠ¸ë¦¬í¬ì¸íŠ¸
+// ¿£Æ®¸®Æ÷ÀÎÆ®
 int WINAPI _tWinMain( HINSTANCE hInst, HINSTANCE, LPTSTR, int )
 {
-	LARGE_INTEGER			nNowTime, nLastTime;		// í˜„ì¬ì™€ ì§ì „ ì‹œê°
-	LARGE_INTEGER			nTimeFreq;					// ì‹œê°„ë‹¨ìœ„
+	LARGE_INTEGER			nNowTime, nLastTime;		// ÇöÀç¿Í Á÷Àü ½Ã°¢
+	LARGE_INTEGER			nTimeFreq;					// ½Ã°£´ÜÀ§
 
-    // í™”ë©´í¬ê¸°
-    g_nClientWidth  = VIEW_WIDTH;						// ë„ˆë¹„
-    g_nClientHeight = VIEW_HEIGHT;						// ë†’ì´
+    // È­¸éÅ©±â
+    g_nClientWidth  = VIEW_WIDTH;						// ³Êºñ
+    g_nClientHeight = VIEW_HEIGHT;						// ³ôÀÌ
 
 	// Register the window class
     WNDCLASSEX wc = { sizeof( WNDCLASSEX ), CS_CLASSDC, MsgProc, 0L, 0L,
@@ -715,14 +715,14 @@ int WINAPI _tWinMain( HINSTANCE hInst, HINSTANCE, LPTSTR, int )
         // Create the shaders
         if( SUCCEEDED( InitDrawModes() ) )
         {
-			if ( SUCCEEDED( InitGeometry() ) ) {					// ì§€ì˜¤ë©”íŠ¸ë¦¬ ì‘ì„±
+			if ( SUCCEEDED( InitGeometry() ) ) {					// Áö¿À¸ŞÆ®¸® ÀÛ¼º
 
 				// Show the window
 				ShowWindow( g_hWnd, SW_SHOWDEFAULT );
 				UpdateWindow( g_hWnd );
 				
-				QueryPerformanceFrequency( &nTimeFreq );			// ì‹œê°„ë‹¨ìœ„
-				QueryPerformanceCounter( &nLastTime );				// 1í”„ë ˆì„ì „ ì‹œê° ì´ˆê¸°í™”
+				QueryPerformanceFrequency( &nTimeFreq );			// ½Ã°£´ÜÀ§
+				QueryPerformanceCounter( &nLastTime );				// 1ÇÁ·¹ÀÓÀü ½Ã°¢ ÃÊ±âÈ­
 
 				// Enter the message loop
 				MSG msg;
@@ -745,7 +745,7 @@ int WINAPI _tWinMain( HINSTANCE hInst, HINSTANCE, LPTSTR, int )
 						QueryPerformanceCounter( &nNowTime );
 					}
 					nLastTime = nNowTime;
-					g_pSwapChain->Present( 0, 0 );					// í‘œì‹œ
+					g_pSwapChain->Present( 0, 0 );					// Ç¥½Ã
 				}
 			}
         }
