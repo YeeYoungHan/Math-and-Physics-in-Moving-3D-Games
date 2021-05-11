@@ -1,7 +1,7 @@
 IndentWidth:     2
 TabWidth:        2
 UseTab:          Always
-ColumnLimit:     120
+ColumnLimit:     180
 BreakBeforeBraces: Custom
 BraceWrapping:
   AfterCaseLabel:  false
