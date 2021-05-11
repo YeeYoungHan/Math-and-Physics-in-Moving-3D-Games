@@ -8,8 +8,7 @@
 #define VIEW_HEIGHT 480 // 화면높이
 
 int FlushDrawingPictures( void ); // 그림을 그리는 대기 행렬 플러시
-int DrawPoints( int x, int y, int nRed, int nGreen, int nBlue );
-// 1점 그리기
+int DrawPoints( int x, int y, int nRed, int nGreen, int nBlue ); // 1점 그리기
 
 // 스캔라인 알고리즘에 의한 렌더링
 int RenderScanLine( void )
@@ -17,13 +16,16 @@ int RenderScanLine( void )
 	int x, y;
 	int nBright;
 
+	// y 방향 루프
 	for( y = 0; y < VIEW_HEIGHT; y++ )
-	{ // y 방향 루프
+	{
+		// x 방향 루프
 		for( x = 0; x < VIEW_WIDTH; x++ )
-		{											// x 방향 루프
+		{
 			nBright = y & 0xff; // 밝기가 y 좌표에 연동
 			DrawPoints( x, y, nBright, nBright, 255 );
 		}
+
 		FlushDrawingPictures();
 	}
 
@@ -73,14 +75,6 @@ struct CBNeverChanges
 	XMMATRIX mView;
 };
 
-// 텍스처 그림 구조체
-struct TEX_PICTURE
-{
-	ID3D11ShaderResourceView *pSRViewTexture;
-	D3D11_TEXTURE2D_DESC tdDesc;
-	int nWidth, nHeight;
-};
-
 // 글로벌 변수
 UINT g_nClientWidth;	// 렌더링 영역의 가로너비
 UINT g_nClientHeight; // 렌더링 영역의 높이
@@ -102,8 +96,6 @@ ID3D11InputLayout *g_pInputLayout;	 // 셰이더 입력 레이아웃
 ID3D11SamplerState *g_pSamplerState; // 샘플러 스테이트
 
 ID3D11Buffer *g_pCBNeverChanges = NULL;
-
-// TEX_PICTURE				g_tBall, g_tBack;
 
 // 렌더링 정점 버퍼
 CUSTOMVERTEX g_cvVertices[MAX_BUFFER_VERTEX];
@@ -129,10 +121,11 @@ HRESULT InitD3D( void )
 
 	// DirectX 그래픽 인터페이스 팩토리 획득
 	IDXGIDevice *pDXGIDevice;
-	hr = g_pd3dDevice->QueryInterface( __uuidof( IDXGIDevice ), (void **)&pDXGIDevice );
 	IDXGIAdapter *pDXGIAdapter;
-	hr = pDXGIDevice->GetParent( __uuidof( IDXGIAdapter ), (void **)&pDXGIAdapter );
 	IDXGIFactory *pIDXGIFactory;
+
+	hr = g_pd3dDevice->QueryInterface( __uuidof( IDXGIDevice ), (void **)&pDXGIDevice );
+	hr = pDXGIDevice->GetParent( __uuidof( IDXGIAdapter ), (void **)&pDXGIAdapter );
 	pDXGIAdapter->GetParent( __uuidof( IDXGIFactory ), (void **)&pIDXGIFactory );
 
 	// 스왑체인 생성
@@ -162,14 +155,14 @@ HRESULT InitD3D( void )
 
 	// 렌더링 타깃 생성
 	ID3D11Texture2D *pBackBuffer = NULL;
-	D3D11_TEXTURE2D_DESC BackBufferSurfaceDesc;
+
 	hr = g_pSwapChain->GetBuffer( 0, __uuidof( ID3D11Texture2D ), (LPVOID *)&pBackBuffer );
 	if( FAILED( hr ) )
 	{
 		MessageBox( NULL, _T( "Can't get backbuffer." ), _T( "Error" ), MB_OK );
 		return hr;
 	}
-	pBackBuffer->GetDesc( &BackBufferSurfaceDesc );
+
 	hr = g_pd3dDevice->CreateRenderTargetView( pBackBuffer, NULL, &g_pRTV );
 	SAFE_RELEASE( pBackBuffer );
 	if( FAILED( hr ) )
@@ -182,11 +175,13 @@ HRESULT InitD3D( void )
 
 	// 래스터라이저 설정
 	D3D11_RASTERIZER_DESC drd;
+
 	ZeroMemory( &drd, sizeof( drd ) );
 	drd.FillMode = D3D11_FILL_SOLID;
 	drd.CullMode = D3D11_CULL_NONE;
 	drd.FrontCounterClockwise = FALSE;
 	drd.DepthClipEnable = TRUE;
+
 	hr = g_pd3dDevice->CreateRasterizerState( &drd, &g_pRS );
 	if( FAILED( hr ) )
 	{
@@ -197,12 +192,14 @@ HRESULT InitD3D( void )
 
 	// 뷰포트 설정
 	D3D11_VIEWPORT vp;
+	
 	vp.Width = (FLOAT)g_nClientWidth;
 	vp.Height = (FLOAT)g_nClientHeight;
 	vp.MinDepth = 0.0f;
 	vp.MaxDepth = 1.0f;
 	vp.TopLeftX = 0.0f;
 	vp.TopLeftY = 0.0f;
+	
 	g_pImmediateContext->RSSetViewports( 1, &vp );
 
 	return S_OK;
@@ -220,6 +217,7 @@ HRESULT MakeShaders( void )
 #ifdef _DEBUG
 	dwShaderFlags |= D3DCOMPILE_DEBUG;
 #endif
+	
 	// 컴파일
 	hr = D3DX11CompileFromFile( _T( "Basic_2D_Geom.fx" ), NULL, NULL, "VS", "vs_4_0_level_9_1", dwShaderFlags, 0, NULL, &pVertexShaderBuffer, &pError, NULL );
 	if( FAILED( hr ) )
@@ -228,6 +226,7 @@ HRESULT MakeShaders( void )
 		SAFE_RELEASE( pError );
 		return hr;
 	}
+
 	hr = D3DX11CompileFromFile( _T( "Basic_2D_Geom.fx" ), NULL, NULL, "PS", "ps_4_0_level_9_1", dwShaderFlags, 0, NULL, &pPixelShaderBuffer, &pError, NULL );
 	if( FAILED( hr ) )
 	{
@@ -245,6 +244,7 @@ HRESULT MakeShaders( void )
 		SAFE_RELEASE( pPixelShaderBuffer );
 		return hr;
 	}
+
 	// PixelShader 생성
 	hr = g_pd3dDevice->CreatePixelShader( pPixelShaderBuffer->GetBufferPointer(), pPixelShaderBuffer->GetBufferSize(), NULL, &g_pPixelShader );
 	if( FAILED( hr ) )
@@ -258,9 +258,10 @@ HRESULT MakeShaders( void )
 	D3D11_INPUT_ELEMENT_DESC layout[] = {
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			//        { "TEXTURE",  0, DXGI_FORMAT_R32G32_FLOAT,       0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
+
 	UINT numElements = ARRAYSIZE( layout );
+
 	// 입력 버퍼 입력 형식 생성
 	hr = g_pd3dDevice->CreateInputLayout( layout, numElements, pVertexShaderBuffer->GetBufferPointer(), pVertexShaderBuffer->GetBufferSize(), &g_pInputLayout );
 	SAFE_RELEASE( pVertexShaderBuffer );
@@ -272,11 +273,13 @@ HRESULT MakeShaders( void )
 
 	// 셰이더 상수 버퍼 생성
 	D3D11_BUFFER_DESC bd;
+
 	ZeroMemory( &bd, sizeof( bd ) );
 	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.ByteWidth = sizeof( CBNeverChanges );
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
+	
 	hr = g_pd3dDevice->CreateBuffer( &bd, NULL, &g_pCBNeverChanges );
 	if( FAILED( hr ) )
 		return hr;
@@ -284,12 +287,14 @@ HRESULT MakeShaders( void )
 	// 변환행렬
 	CBNeverChanges cbNeverChanges;
 	XMMATRIX mScreen;
+
 	mScreen = XMMatrixIdentity();
 	mScreen._11 = 2.0f / g_nClientWidth;
 	mScreen._22 = -2.0f / g_nClientHeight;
 	mScreen._41 = -1.0f;
 	mScreen._42 = 1.0f;
 	cbNeverChanges.mView = XMMatrixTranspose( mScreen );
+	
 	g_pImmediateContext->UpdateSubresource( g_pCBNeverChanges, 0, NULL, &cbNeverChanges, 0, 0 );
 
 	return S_OK;
@@ -302,6 +307,7 @@ int InitDrawModes( void )
 
 	// 블렌드 스테이트
 	D3D11_BLEND_DESC BlendDesc;
+
 	BlendDesc.AlphaToCoverageEnable = FALSE;
 	BlendDesc.IndependentBlendEnable = FALSE;
 	BlendDesc.RenderTarget[0].BlendEnable = TRUE;
@@ -312,6 +318,7 @@ int InitDrawModes( void )
 	BlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 	BlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	BlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	
 	hr = g_pd3dDevice->CreateBlendState( &BlendDesc, &g_pbsAlphaBlend );
 	if( FAILED( hr ) )
 	{
@@ -320,6 +327,7 @@ int InitDrawModes( void )
 
 	// 샘플러
 	D3D11_SAMPLER_DESC samDesc;
+
 	ZeroMemory( &samDesc, sizeof( samDesc ) );
 	samDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	samDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -327,6 +335,7 @@ int InitDrawModes( void )
 	samDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	samDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
 	samDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	
 	hr = g_pd3dDevice->CreateSamplerState( &samDesc, &g_pSamplerState );
 	if( FAILED( hr ) )
 	{
@@ -343,16 +352,18 @@ HRESULT InitGeometry( void )
 
 	// 정점 버퍼 생성
 	D3D11_BUFFER_DESC BufferDesc;
+	D3D11_SUBRESOURCE_DATA SubResourceData;
+	
 	BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	BufferDesc.ByteWidth = sizeof( CUSTOMVERTEX ) * MAX_BUFFER_VERTEX;
 	BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	BufferDesc.MiscFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA SubResourceData;
+	
 	SubResourceData.pSysMem = g_cvVertices;
 	SubResourceData.SysMemPitch = 0;
 	SubResourceData.SysMemSlicePitch = 0;
+	
 	hr = g_pd3dDevice->CreateBuffer( &BufferDesc, &SubResourceData, &g_pD3D11VertexBuffer );
 	if( FAILED( hr ) )
 	{
@@ -365,8 +376,6 @@ HRESULT InitGeometry( void )
 // 종료처리
 int Cleanup( void )
 {
-	// SAFE_RELEASE( g_tBall.pSRViewTexture );
-	// SAFE_RELEASE( g_tBack.pSRViewTexture );
 	SAFE_RELEASE( g_pD3D11VertexBuffer );
 
 	SAFE_RELEASE( g_pSamplerState );
@@ -421,12 +430,14 @@ int FlushDrawingPictures( void )
 	if( g_nVertexNum > 0 )
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
+
 		hr = g_pImmediateContext->Map( g_pD3D11VertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource );
 		if( SUCCEEDED( hr ) )
 		{
 			CopyMemory( mappedResource.pData, &( g_cvVertices[0] ), sizeof( CUSTOMVERTEX ) * g_nVertexNum );
 			g_pImmediateContext->Unmap( g_pD3D11VertexBuffer, 0 );
 		}
+
 		g_pImmediateContext->PSSetShaderResources( 0, 1, &g_pNowTexture );
 		g_pImmediateContext->Draw( g_nVertexNum, 0 );
 	}
@@ -449,7 +460,6 @@ int DrawPoints( int x, int y, int nRed, int nGreen, int nBlue )
 // 렌더링
 HRESULT Render( void )
 {
-	//	int				i, j;
 	// 화면 클리어
 	XMFLOAT4 v4Color = XMFLOAT4( 0.0f, 0.0f, 1.0f, 1.0f );
 	g_pImmediateContext->ClearRenderTargetView( g_pRTV, (float *)&v4Color );
@@ -461,8 +471,8 @@ HRESULT Render( void )
 	// 렌더링 설정
 	UINT nStrides = sizeof( CUSTOMVERTEX );
 	UINT nOffsets = 0;
+
 	g_pImmediateContext->IASetVertexBuffers( 0, 1, &g_pD3D11VertexBuffer, &nStrides, &nOffsets );
-	//    g_pImmediateContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 	g_pImmediateContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_POINTLIST );
 	g_pImmediateContext->IASetInputLayout( g_pInputLayout );
 
@@ -474,7 +484,6 @@ HRESULT Render( void )
 	// 렌더링
 	g_pImmediateContext->OMSetBlendState( NULL, NULL, 0xFFFFFFFF );
 	RenderScanLine();
-	//	DrawPicture( 0.0f, 0.0f, &g_tBack );
 
 	// 표시
 	FlushDrawingPictures();
@@ -509,13 +518,12 @@ int WINAPI _tWinMain( HINSTANCE hInst, HINSTANCE, LPTSTR, int )
 		if( SUCCEEDED( InitDrawModes() ) )
 		{
 			if( SUCCEEDED( InitGeometry() ) )
-			{ // 지오메트리 생성
+			{ 
+				// 지오메트리 생성
 
 				// Show the window
 				ShowWindow( g_hWnd, SW_SHOWDEFAULT );
 				UpdateWindow( g_hWnd );
-
-				//				InitCharacter();									// 캐릭터 초기화
 
 				QueryPerformanceFrequency( &nTimeFreq ); // 시간단위
 				QueryPerformanceCounter( &nLastTime );	 // 1프레임전 시각 초기화
@@ -523,9 +531,11 @@ int WINAPI _tWinMain( HINSTANCE hInst, HINSTANCE, LPTSTR, int )
 				// Enter the message loop
 				MSG msg;
 				ZeroMemory( &msg, sizeof( msg ) );
+
 				while( msg.message != WM_QUIT )
 				{
 					Render();
+
 					do
 					{
 						if( PeekMessage( &msg, NULL, 0U, 0U, PM_REMOVE ) )
@@ -535,10 +545,12 @@ int WINAPI _tWinMain( HINSTANCE hInst, HINSTANCE, LPTSTR, int )
 						}
 						QueryPerformanceCounter( &nNowTime );
 					} while( ( ( nNowTime.QuadPart - nLastTime.QuadPart ) < ( nTimeFreq.QuadPart / 90 ) ) && ( msg.message != WM_QUIT ) );
+
 					while( ( ( nNowTime.QuadPart - nLastTime.QuadPart ) < ( nTimeFreq.QuadPart / 60 ) ) && ( msg.message != WM_QUIT ) )
 					{
 						QueryPerformanceCounter( &nNowTime );
 					}
+
 					nLastTime = nNowTime;
 					g_pSwapChain->Present( 0, 0 ); // 표시
 				}
@@ -549,5 +561,6 @@ int WINAPI _tWinMain( HINSTANCE hInst, HINSTANCE, LPTSTR, int )
 	// Clean up everything and exit the app
 	Cleanup();
 	UnregisterClass( _T( "D3D Sample" ), wc.hInstance );
+
 	return 0;
 }
