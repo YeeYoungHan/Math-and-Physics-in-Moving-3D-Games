@@ -3,6 +3,7 @@
 // Simple2D셰이더(텍스처 없음)
 // ---------------------------------------------------------
 
+/*
 // 텍스처
 Texture2D Tex2D : register( t0 ); // 텍스처
 
@@ -13,6 +14,7 @@ SamplerState MeshTextureSampler : register( s0 )
 	AddressU = Wrap;
 	AddressV = Wrap;
 };
+*/
 
 // 상수 버퍼
 cbuffer cbNeverChanges : register( b0 ) { matrix View; };
