@@ -25,3 +25,4 @@ BraceWrapping:
 SpaceBeforeParens: Never
 SpacesInConditionalStatement: true
 SpacesInParentheses: true
+AlignEscapedNewlines : DontAlign
