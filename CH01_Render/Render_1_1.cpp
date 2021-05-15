@@ -84,16 +84,16 @@ HWND g_hWnd; // 윈도우 핸들
 ID3D11Device *g_pd3dDevice;								// 디바이스
 IDXGISwapChain *g_pSwapChain;							// DXGI 스왑체인
 ID3D11DeviceContext *g_pImmediateContext; // 디바이스 컨텍스트
-ID3D11RasterizerState *g_pRS;							// 래스터라이저
+// ID3D11RasterizerState *g_pRS;							// 래스터라이저
 ID3D11RenderTargetView *g_pRTV;						// 렌더링 타깃
 D3D_FEATURE_LEVEL g_FeatureLevel;					// 피처 레벨
 
 ID3D11Buffer *g_pD3D11VertexBuffer;	 // 정점 버퍼
-ID3D11BlendState *g_pbsAlphaBlend;	 // 알파 블렌드
+// ID3D11BlendState *g_pbsAlphaBlend;	 // 알파 블렌드
 ID3D11VertexShader *g_pVertexShader; // 정점 셰이더
 ID3D11PixelShader *g_pPixelShader;	 // 픽셀 셰이더
 ID3D11InputLayout *g_pInputLayout;	 // 셰이더 입력 레이아웃
-ID3D11SamplerState *g_pSamplerState; // 샘플러 스테이트
+// ID3D11SamplerState *g_pSamplerState; // 샘플러 스테이트
 
 ID3D11Buffer *g_pCBNeverChanges = NULL;
 
@@ -173,6 +173,7 @@ HRESULT InitD3D( void )
 
 	g_pImmediateContext->OMSetRenderTargets( 1, &g_pRTV, NULL );
 
+	/*
 	// 래스터라이저 설정
 	D3D11_RASTERIZER_DESC drd;
 
@@ -189,6 +190,7 @@ HRESULT InitD3D( void )
 		return hr;
 	}
 	g_pImmediateContext->RSSetState( g_pRS );
+	*/
 
 	// 뷰포트 설정
 	D3D11_VIEWPORT vp;
@@ -303,6 +305,7 @@ HRESULT MakeShaders( void )
 // 드로우 모드 오브젝트 초기화
 int InitDrawModes( void )
 {
+	/*
 	HRESULT hr;
 
 	// 블렌드 스테이트
@@ -341,6 +344,7 @@ int InitDrawModes( void )
 	{
 		return hr;
 	}
+	*/
 
 	return S_OK;
 }
@@ -378,14 +382,14 @@ int Cleanup( void )
 {
 	SAFE_RELEASE( g_pD3D11VertexBuffer );
 
-	SAFE_RELEASE( g_pSamplerState );
-	SAFE_RELEASE( g_pbsAlphaBlend );
+	// SAFE_RELEASE( g_pSamplerState );
+	// SAFE_RELEASE( g_pbsAlphaBlend );
 	SAFE_RELEASE( g_pInputLayout );
 	SAFE_RELEASE( g_pPixelShader );
 	SAFE_RELEASE( g_pVertexShader );
 	SAFE_RELEASE( g_pCBNeverChanges );
 
-	SAFE_RELEASE( g_pRS ); // 래스터라이저
+	// SAFE_RELEASE( g_pRS ); // 래스터라이저
 
 	// 스테이터스 클리어
 	if( g_pImmediateContext )
@@ -465,8 +469,8 @@ HRESULT Render( void )
 	g_pImmediateContext->ClearRenderTargetView( g_pRTV, (float *)&v4Color );
 
 	// 샘플러-래스터라이저 세트
-	g_pImmediateContext->PSSetSamplers( 0, 1, &g_pSamplerState );
-	g_pImmediateContext->RSSetState( g_pRS );
+	// g_pImmediateContext->PSSetSamplers( 0, 1, &g_pSamplerState );
+	// g_pImmediateContext->RSSetState( g_pRS );
 
 	// 렌더링 설정
 	UINT nStrides = sizeof( CUSTOMVERTEX );
