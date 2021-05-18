@@ -305,47 +305,6 @@ HRESULT MakeShaders( void )
 // 드로우 모드 오브젝트 초기화
 int InitDrawModes( void )
 {
-	/*
-	HRESULT hr;
-
-	// 블렌드 스테이트
-	D3D11_BLEND_DESC BlendDesc;
-
-	BlendDesc.AlphaToCoverageEnable = FALSE;
-	BlendDesc.IndependentBlendEnable = FALSE;
-	BlendDesc.RenderTarget[0].BlendEnable = TRUE;
-	BlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-	BlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-	BlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	BlendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-	BlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-	BlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-	BlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-	
-	hr = g_pd3dDevice->CreateBlendState( &BlendDesc, &g_pbsAlphaBlend );
-	if( FAILED( hr ) )
-	{
-		return hr;
-	}
-
-	// 샘플러
-	D3D11_SAMPLER_DESC samDesc;
-
-	ZeroMemory( &samDesc, sizeof( samDesc ) );
-	samDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	samDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	samDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	samDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	samDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	
-	hr = g_pd3dDevice->CreateSamplerState( &samDesc, &g_pSamplerState );
-	if( FAILED( hr ) )
-	{
-		return hr;
-	}
-	*/
-
 	return S_OK;
 }
 
