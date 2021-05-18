@@ -486,7 +486,7 @@ HRESULT Render( void )
 	g_pImmediateContext->PSSetShader( g_pPixelShader, NULL, 0 );
 
 	// ·»´õ¸µ
-	g_pImmediateContext->OMSetBlendState( NULL, NULL, 0xFFFFFFFF );
+	//g_pImmediateContext->OMSetBlendState( NULL, NULL, 0xFFFFFFFF );
 	RenderScanLine();
 
 	// Ç¥½Ã
